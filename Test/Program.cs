@@ -1,28 +1,117 @@
-﻿using Test;
+﻿using Test.Address;
+using Test.Country;
+using Test.PaginatedList;
+using Test.Person;
+using Test.Person.Command.Update;
+using Test.Person.Command.Update.Mappers;
+using Test.Person.Query.Mappers;
 
-var personMapper = new PersonMapper();
+var person1 = new Person
+{
+    Name = "Marian",
+    Age = 40,
+    Address = new Address
+    {
+        City = "Szczecin",
+        Country = new Country
+        {
+            Name = "Poland",
+            Population = 38_000_000
+        }
+    }
+};
 
-var dataReader = DataBuilder.BuildDataReader();
+var person2 = new Person
+{
+    Name = "Mariola",
+    Age = 39,
+    Address = new Address
+    {
+        City = "Warszawa",
+        Country = new Country
+        {
+            Name = "Poland",
+            Population = 38_000_000
+        }
+    }
+};
 
-var persons = personMapper.Map(dataReader);
+var person1Dto = person1.ToPersonDto();
+
+var person2Dto = person2.ToPersonDto();
 
 var paginatedList1 = new PaginatedList<Person>
 {
     Elements = new List<Person>
     {
-        new("Damian", 26),
-        new("Bartek", 24)
+        new()
+        {
+            Name = "Maciek",
+            Age = 21,
+            Address = new Address
+            {
+                City = "Warszawa",
+                Country = new Country
+                {
+                    Name = "Poland",
+                    Population = 38_000_000
+                }
+            }
+        },
+        new()
+        {
+            Name = "Zdzisław",
+            Age = 51,
+            Address = new Address
+            {
+                City = "Gdańsk",
+                Country = new Country
+                {
+                Name = "Poland",
+                Population = 38_000_000
+            }
+            }
+        },
+        new()
+        {
+            Name = "Edward",
+            Age = 32,
+            Address = new Address
+            {
+                City = "Berlin",
+                Country = new Country
+                {
+                Name = "Germany",
+                Population = 80_000_000
+            }
+            }
+        }
     }
 };
 
-var paginatedList2 = personMapper.Map(paginatedList1);
+var paginatedList2 = paginatedList1.ToPaginatedList(x => x.ToPersonDto());
 
-var paginatedList3 = personMapper.Map(persons);
+var paginatedList3 = new PaginatedList<Country>
+{
+    Elements = new List<Country>
+    {
+        new()
+        {
+            Name = "Czech",
+            Population = 10_000_000
+        },
+        new()
+        {
+            Name = "Philipines",
+            Population = 110_000_000
+        }
+    }
+};
 
-var person1 = new Person("Maria", 40);
+var paginatedList4 = paginatedList3.ToPaginatedList(x => x.ToCountryDto());
 
-var person1UpdatedDto = new PersonDto("Mariola", 41);
+var personUpdateCommand1 = new UpdatePersonCommand(new AddressDto(new CountryDto("Nowhere", 0), "Nowhere"));
 
-personMapper.Update(person1UpdatedDto, person1);
+person1.Update(personUpdateCommand1);
 
 var xd = "";
